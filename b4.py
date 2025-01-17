@@ -8,11 +8,7 @@ def get_closest_image(timestamp):
     date = ee.Date(timestamp)
     filtered = collection.filterDate(date, date.advance(90, 'day'))
     image = filtered.sort('system:time_start').first()
-    image = image.select(['B4']).set('system:time_start', date.millis())
-    label = ee.Image.constant(1).visualize(
-        opacity=0.7, palette=['black']
-    ).set('label', date.format('YYYY-MM-dd'))
-    return image.visualize(min=0, max=3000, palette=['black', 'white']).blend(label)
+    return image.select(['B4']).set('system:time_start', date.millis())
 
 collection = (
     ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
@@ -31,14 +27,26 @@ dates = ee.List.sequence(
 
 frames = dates.map(get_closest_image)
 composites_b4 = ee.ImageCollection(frames)
-frames_size = composites_b4.size().getInfo()
-print(frames_size)
 
 video_args = {
     'dimensions': 720,
     'region': roi.geometry(),
     'framesPerSecond': 2,
+    'min': 0,
+    'max': 3000,
+    'palette': ['black', 'white']
 }
 
-video_url = composites_b4.getVideoThumbURL(video_args)
-print(video_url)
+gif_path = 'ndvi_timelapse.gif'
+geemap.download_ee_video(composites_b4, video_args, gif_path)
+
+dates_info = dates.map(lambda d, i: ee.String(ee.Number(i).format('%d: ')).cat(ee.Date(d).format('YYYY-MM-dd'))).getInfo()
+
+geemap.add_text_to_gif(
+    gif_path,
+    'ndvi_timelapse_with_date.gif',
+    xy=(10, 50),
+    text_sequence=dates_info,
+    font_size=30,
+    font_color='white',
+)
