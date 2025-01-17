@@ -13,7 +13,7 @@ def get_closest_image(timestamp):
 collection = (
     ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
     .filterBounds(roi)
-    .filterDate('2020-01-01', '2024-01-01')
+    .filterDate('2023-01-01', '2024-01-01')
     .filter(ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE", 10))
 )
 
