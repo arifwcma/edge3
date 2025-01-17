@@ -31,7 +31,7 @@ composites_b4 = ee.ImageCollection(frames)
 video_args = {
     'dimensions': 720,
     'region': roi.geometry(),
-    'framesPerSecond': 2,
+    'framesPerSecond': 0.5,
     'min': 0,
     'max': 3000,
     'palette': ['black', 'white']
@@ -40,7 +40,8 @@ video_args = {
 gif_path = 'ndvi_timelapse.gif'
 geemap.download_ee_video(composites_b4, video_args, gif_path)
 
-dates_info = dates.map(lambda d, i: ee.String(ee.Number(i).format('%d: ')).cat(ee.Date(d).format('YYYY-MM-dd'))).getInfo()
+dates_info = dates.map(lambda d: ee.Date(d).format('YYYY-MM-dd')).getInfo()
+dates_info = [f"{i + 1}: {date}" for i, date in enumerate(dates_info)]
 
 geemap.add_text_to_gif(
     gif_path,
