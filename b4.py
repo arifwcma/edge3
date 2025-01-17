@@ -37,7 +37,7 @@ video_args = {
     'palette': ['black', 'white']
 }
 
-gif_path = 'ndvi_timelapse.gif'
+gif_path = 'b4_timelapse.gif'
 geemap.download_ee_video(composites_b4, video_args, gif_path)
 
 dates_info = dates.map(lambda d: ee.Date(d).format('YYYY-MM-dd')).getInfo()
@@ -45,7 +45,7 @@ dates_info = [f"{i + 1}: {date}" for i, date in enumerate(dates_info)]
 
 geemap.add_text_to_gif(
     gif_path,
-    'ndvi_timelapse_with_date.gif',
+    'b4_timelapse_with_date.gif',
     xy=(10, 50),
     text_sequence=dates_info,
     font_size=30,
