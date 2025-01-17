@@ -13,15 +13,15 @@ def get_closest_image(timestamp):
 collection = (
     ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
     .filterBounds(roi)
-    .filterDate('2023-01-01', '2024-01-01')
+    .filterDate('2021-01-01', '2025-01-01')
     .filter(ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE", 10))
 )
 
 collection = collection.filter(ee.Filter.listContains('system:band_names', 'B4'))
 
 dates = ee.List.sequence(
-    ee.Date('2023-01-01').millis(),
-    ee.Date('2024-01-01').millis(),
+    ee.Date('2021-01-01').millis(),
+    ee.Date('2025-01-01').millis(),
     3 * 30 * 24 * 60 * 60 * 1000
 )
 
