@@ -4,16 +4,15 @@ import geemap
 ee.Initialize(project='edge3-448100')
 roi = geemap.geojson_to_ee("site_1.geojson")
 
-
-
-def select_b4(image):
-    return image.select(['B4'])
-
-def create_composite_b4(start):
-    start_date = ee.Date(start)
-    end_date = start_date.advance(3, 'month')
-    filtered = collection.filterDate(start_date, end_date).map(select_b4)
-    return filtered.median().set('system:time_start', start_date.millis())
+def get_closest_image(timestamp):
+    date = ee.Date(timestamp)
+    filtered = collection.filterDate(date, date.advance(90, 'day'))
+    image = filtered.sort('system:time_start').first()
+    image = image.select(['B4']).set('system:time_start', date.millis())
+    label = ee.Image.constant(1).visualize(
+        opacity=0.7, palette=['black']
+    ).set('label', date.format('YYYY-MM-dd'))
+    return image.visualize(min=0, max=3000, palette=['black', 'white']).blend(label)
 
 collection = (
     ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
@@ -30,15 +29,15 @@ dates = ee.List.sequence(
     3 * 30 * 24 * 60 * 60 * 1000
 )
 
-composites_b4 = ee.ImageCollection(dates.map(create_composite_b4))
+frames = dates.map(get_closest_image)
+composites_b4 = ee.ImageCollection(frames)
+frames_size = composites_b4.size().getInfo()
+print(frames_size)
 
 video_args = {
     'dimensions': 720,
     'region': roi.geometry(),
     'framesPerSecond': 2,
-    'min': 0,
-    'max': 3000,
-    'palette': ['black', 'white']
 }
 
 video_url = composites_b4.getVideoThumbURL(video_args)
