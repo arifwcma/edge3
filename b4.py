@@ -50,4 +50,5 @@ geemap.add_text_to_gif(
     text_sequence=dates_info,
     font_size=30,
     font_color='white',
+    duration=2000
 )
