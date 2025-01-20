@@ -4,7 +4,6 @@ import os
 
 ee.Initialize(project='edge3-448100')
 
-
 def get_closest_image_from_collection(collection):
     def get_closest_image(timestamp):
         date = ee.Date(timestamp)
@@ -18,19 +17,16 @@ def get_closest_image_from_collection(collection):
         })
     return get_closest_image
 
-
-
-def file_exists(site_file,si):
-    find = f"{site_file}_{si}"
+def file_exists(site_file, si):
+    find = f"{site_file}_{si}_ind"
     for file in os.listdir("out"):
         if file.startswith(find):
             return True
     return False
 
-
 def get_site(site_file):
-    out_file_normal = f"{site_file}_ndvi_timelapse.gif"
-    out_file_date = f"{site_file}_ndvi_timelapse_date.gif"
+    out_file_normal = f"{site_file}_ndvi_ind_timelapse.gif"
+    out_file_date = f"{site_file}_ndvi_ind_timelapse_date.gif"
     if file_exists(site_file, "ndvi"):
         print(f"{out_file_normal} exists. Skipping.")
         return
@@ -68,20 +64,20 @@ def get_site(site_file):
     gif_path = out_file_normal
     geemap.download_ee_video(composites_ndvi, video_args, gif_path)
 
-    dates_info = dates.map(lambda d: ee.Date(d).format('YYYY-MM-dd')).getInfo()
-    dates_info = [f"{i + 1}: {date}" for i, date in enumerate(dates_info)]
+    capture_times = composites_ndvi.aggregate_array('image_capture_time').getInfo()
+    capture_times = [f"{i + 1}: {time}" for i, time in enumerate(capture_times)]
 
     geemap.add_text_to_gif(
         gif_path,
         out_file_date,
         xy=(10, 50),
-        text_sequence=dates_info,
+        text_sequence=capture_times,
         font_size=30,
         font_color='white',
         duration=2000
     )
 
-sites = ["site_1.geojson","site_2.geojson","site_3.geojson","site_4.geojson"]
+sites = ["site_1.geojson", "site_2.geojson", "site_3.geojson", "site_4.geojson"]
 
 for site in sites:
     get_site(site)
