@@ -8,6 +8,7 @@ def get_closest_image_from_collection(collection):
     def get_closest_image(timestamp):
         date = ee.Date(timestamp)
         filtered = collection.filterDate(date, date.advance(90, 'day'))
+        #filtered = filtered.filter(ee.Filter.calendarRange(1, 9, 'hour'))
         image = filtered.sort('system:time_start').first()
         image_time = ee.Date(image.get('system:time_start')).format('YYYY-MM-dd HH:mm:ss')
         ndvi = image.normalizedDifference(['B8', 'B4']).rename('NDVI')
@@ -16,6 +17,8 @@ def get_closest_image_from_collection(collection):
             'image_capture_time': image_time
         })
     return get_closest_image
+
+
 
 def file_exists(site_file, si):
     find = f"{site_file}_{si}_ind"
