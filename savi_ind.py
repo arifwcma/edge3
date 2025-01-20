@@ -65,9 +65,9 @@ def get_site(site_file):
         'dimensions': 720,
         'region': roi.geometry(),
         'framesPerSecond': 0.5,
-        'min': -1,
+        'min': 0,
         'max': 1,
-        'palette': ['brown', 'yellow', 'green']
+        'palette': ['blue', 'white', 'green']
     }
 
     gif_path = out_file_normal

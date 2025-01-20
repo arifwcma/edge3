@@ -61,7 +61,7 @@ def get_site(site_file):
         'dimensions': 720,
         'region': roi.geometry(),
         'framesPerSecond': 0.5,
-        'min': -1,
+        'min': 0,
         'max': 1,
         'palette': ['blue', 'white', 'green']
     }
