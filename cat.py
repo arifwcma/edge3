@@ -13,25 +13,25 @@ geojson_files = ['site_1.geojson', 'site_2.geojson', 'site_3.geojson', 'site_4.g
 spectral_indices = {
     "NDVI": {
         "function": lambda img: img.normalizedDifference(['B8', 'B4']),
-        "vis_params": {"min": -0.2, "max": 0.8, "palette": ["blue", "white", "green"]}
+        "vis_params": {"min": -0.1, "max": 0.9, "palette": ["brown", "yellow", "green"]}
     },
     "EVI": {
         "function": lambda img: img.expression(
             '2.5 * ((B8 - B4) / (B8 + 6 * B4 - 7.5 * B2 + 1))',
             {'B2': img.select('B2'), 'B4': img.select('B4'), 'B8': img.select('B8')}
         ),
-        "vis_params": {"min": -2, "max": 2, "palette": ["brown", "white", "green"]}
+        "vis_params": {"min": -1, "max": 1, "palette": ["white", "lightgreen", "darkgreen"]}
     },
     "NDWI": {
         "function": lambda img: img.normalizedDifference(['B3', 'B8A']),
-        "vis_params": {"min": -1, "max": 1, "palette": ["darkblue", "white", "lightblue"]}
+        "vis_params": {"min": -1, "max": 1, "palette": ["blue", "white", "lightblue"]}
     },
     "SAVI": {
         "function": lambda img: img.expression(
             '((B8 - B4) / (B8 + B4 + 0.5)) * (1.0 + 0.5)',
             {'B4': img.select('B4'), 'B8': img.select('B8')}
         ),
-        "vis_params": {"min": -0.1, "max": 0.9, "palette": ["brown", "white", "darkgreen"]}
+        "vis_params": {"min": 0, "max": 1, "palette": ["yellow", "lightgreen", "green"]}
     },
     "NDII": {
         "function": lambda img: img.normalizedDifference(['B8', 'B11']),
