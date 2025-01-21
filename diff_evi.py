@@ -51,8 +51,8 @@ def generate_gif_for_site(site_file):
         'dimensions': 720,
         'region': roi.geometry(),
         'framesPerSecond': 0.5,
-        'min': -1,
-        'max': 1,
+        'min': -2,
+        'max': 2,
         'palette': ['red', 'white', 'green']
     }
     os.makedirs("diff", exist_ok=True)

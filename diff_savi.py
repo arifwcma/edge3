@@ -12,9 +12,19 @@ def calculate_difference_image(collection, timestamp):
     date3 = date2.advance(90, 'day')
     filtered1 = collection.filterDate(date1, date2).filter(ee.Filter.listContains('system:band_names', 'B8')).filter(ee.Filter.listContains('system:band_names', 'B4'))
     filtered2 = collection.filterDate(date2, date3).filter(ee.Filter.listContains('system:band_names', 'B8')).filter(ee.Filter.listContains('system:band_names', 'B4'))
-    mean_image1 = filtered1.mean().normalizedDifference(['B8', 'B4']).rename('NDVI')
-    mean_image2 = filtered2.mean().normalizedDifference(['B8', 'B4']).rename('NDVI')
-    diff_image = mean_image2.subtract(mean_image1).rename('NDVI_DIFF')
+    mean_image1 = filtered1.mean().expression(
+        '((B8 - B4) / (B8 + B4 + L)) * (1 + L)', {
+            'B8': filtered1.mean().select('B8'),
+            'B4': filtered1.mean().select('B4'),
+            'L': 0.5
+        }).rename('SAVI')
+    mean_image2 = filtered2.mean().expression(
+        '((B8 - B4) / (B8 + B4 + L)) * (1 + L)', {
+            'B8': filtered2.mean().select('B8'),
+            'B4': filtered2.mean().select('B4'),
+            'L': 0.5
+        }).rename('SAVI')
+    diff_image = mean_image2.subtract(mean_image1).rename('SAVI_DIFF')
     return diff_image.set('system:time_start', date2.millis())
 
 def count_images_in_collection(collection, date, offset):
@@ -36,7 +46,7 @@ def generate_gif_for_site(site_file):
         3 * 30 * 24 * 60 * 60 * 1000
     )
     frames = dates.slice(0, dates.length().subtract(1)).map(lambda timestamp: calculate_difference_image(collection, timestamp))
-    composites_ndvi_diff = ee.ImageCollection(frames)
+    composites_savi_diff = ee.ImageCollection(frames)
     video_args = {
         'dimensions': 720,
         'region': roi.geometry(),
@@ -46,13 +56,13 @@ def generate_gif_for_site(site_file):
         'palette': ['red', 'white', 'green']
     }
     os.makedirs("diff", exist_ok=True)
-    gif_path = os.path.join("temp", f"{name}_NDVI_raw.gif")
-    geemap.download_ee_video(composites_ndvi_diff, video_args, gif_path)
-    dates_list = dates.map(lambda d: ee.Date(d).advance(90,"day").format('YYYY-MM-dd')).getInfo()
-    frames_size = composites_ndvi_diff.size().getInfo()
+    gif_path = os.path.join("temp", f"{name}_SAVI_raw.gif")
+    geemap.download_ee_video(composites_savi_diff, video_args, gif_path)
+    dates_list = dates.map(lambda d: ee.Date(d).advance(90, "day").format('YYYY-MM-dd')).getInfo()
+    frames_size = composites_savi_diff.size().getInfo()
     dates_list = dates_list[0:frames_size]
     dates_list = [f"{i+1}: {d}" for i, d in enumerate(dates_list)]
-    output_path_with_text = os.path.join("diff", f"{name}_NDVI.gif")
+    output_path_with_text = os.path.join("diff", f"{name}_SAVI.gif")
     geemap.add_text_to_gif(
         gif_path,
         output_path_with_text,
