@@ -69,7 +69,7 @@ os.makedirs("temp", exist_ok=True)
 for idx, geojson in enumerate(geojson_files, 1):
     roi = geemap.geojson_to_ee(geojson).geometry()
     buffered_roi = roi.buffer(2000).bounds()
-    sentinel2 = ee.ImageCollection('COPERNICUS/S2_HARMONIZED').filterBounds(buffered_roi).filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
+    sentinel2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(buffered_roi).filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
     latest_image = sentinel2.sort('system:time_start', False).first()
 
     capture_date = latest_image.date().format('yyyy_MM_dd').getInfo()
