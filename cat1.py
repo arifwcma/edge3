@@ -9,34 +9,9 @@ from matplotlib.colors import LinearSegmentedColormap
 
 ee.Initialize(project='edge3-448100')
 
-geojson_files = ['site_1.geojson', 'site_2.geojson', 'site_3.geojson', 'site_4.geojson']
+geojson_files = ['site_1.geojson']
 spectral_indices = {
-    "NDVI": {
-        "function": lambda img: img.normalizedDifference(['B8', 'B4']),
-        "vis_params": {"min": -0.2, "max": 0.8, "palette": ["blue", "white", "green"]}
-    },
-    "EVI": {
-        "function": lambda img: img.expression(
-            '2.5 * ((B8 - B4) / (B8 + 6 * B4 - 7.5 * B2 + 1))',
-            {'B2': img.select('B2'), 'B4': img.select('B4'), 'B8': img.select('B8')}
-        ),
-        "vis_params": {"min": -2, "max": 2, "palette": ["brown", "white", "green"]}
-    },
-    "NDWI": {
-        "function": lambda img: img.normalizedDifference(['B3', 'B8A']),
-        "vis_params": {"min": -1, "max": 1, "palette": ["darkblue", "white", "lightblue"]}
-    },
-    "SAVI": {
-        "function": lambda img: img.expression(
-            '((B8 - B4) / (B8 + B4 + 0.5)) * (1.0 + 0.5)',
-            {'B4': img.select('B4'), 'B8': img.select('B8')}
-        ),
-        "vis_params": {"min": -0.1, "max": 0.9, "palette": ["brown", "white", "darkgreen"]}
-    },
-    "NDII": {
-        "function": lambda img: img.normalizedDifference(['B8', 'B11']),
-        "vis_params": {"min": -0.5, "max": 1, "palette": ["blue", "white", "green"]}
-    }
+    "NDII": lambda img: img.normalizedDifference(['B8', 'B11'])
 }
 
 os.makedirs("temp", exist_ok=True)
@@ -62,11 +37,11 @@ for idx, geojson in enumerate(geojson_files, 1):
     else:
         continue
 
-    for index_name, index_data in spectral_indices.items():
-        index_function = index_data["function"]
-        vis_params = index_data["vis_params"]
-
+    for index_name, index_function in spectral_indices.items():
         index_image = index_function(latest_image)
+        palette = ['blue', 'white', 'green']
+        cmap = LinearSegmentedColormap.from_list('custom', palette)
+        vis_params = {'min': -1, 'max': 1, 'palette': palette}
         thumb = index_image.visualize(**vis_params).getThumbURL({'region': roi.getInfo(), 'scale': 10})
 
         response = requests.get(thumb, stream=True)
@@ -77,13 +52,10 @@ for idx, geojson in enumerate(geojson_files, 1):
                 for chunk in response.iter_content(1024):
                     f.write(chunk)
 
-            palette = vis_params["palette"]
-            cmap = LinearSegmentedColormap.from_list('custom', palette)
-
             si_img_array = np.array(Image.open(si_path).convert('RGB'))
             fig, ax = plt.subplots(figsize=(10, 8))
             cax = ax.imshow(si_img_array)
-            sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vis_params["min"], vmax=vis_params["max"]))
+            sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=-1, vmax=1))
             sm.set_array([])
             cbar = plt.colorbar(sm, ax=ax, orientation='vertical', fraction=0.03, pad=0.04)
             cbar.set_label(f"{index_name} Value", rotation=90, labelpad=15)
