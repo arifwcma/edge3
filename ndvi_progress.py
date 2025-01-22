@@ -7,7 +7,7 @@ import numpy as np
 ee.Initialize(project='edge3-448100')
 
 sites = [
-    {'name': 'site_1', 'geojson_path': 'site_1.geojson'}
+    {'name': 'site_2', 'geojson_path': 'site_2.geojson'}
 ]
 
 output_folder = "central"
@@ -25,8 +25,7 @@ for site in sites:
     highlight_square = center.buffer(50).bounds()
 
     collection = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
-        .filterBounds(polygon) \
-        .filterMetadata('CLOUDY_PIXEL_PERCENTAGE', 'less_than', 10)
+        .filterBounds(polygon)
 
     start_date = ee.Date('2021-01-01')
     end_date = ee.Date('2024-12-31')
@@ -60,6 +59,6 @@ for site in sites:
         start_date = next_month
 
     df = pd.DataFrame(data)
-    csv_path = os.path.join(output_folder, f"{name}_ndvi_stats.csv")
+    csv_path = os.path.join(output_folder, f"{name}_ndvi_stats2.csv")
     df.to_csv(csv_path, index=False)
     print(f"CSV for {name} saved to {csv_path}")
