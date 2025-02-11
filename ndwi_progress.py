@@ -4,10 +4,16 @@ import os
 import pandas as pd
 import numpy as np
 
-
+req = -1
 def restart_gee_session():
-    ee.Reset()
-    ee.Initialize(project='edge3-448100')
+    global req
+    req = req+1
+    if req == 0:
+        print("Reset")
+        ee.Reset()
+        ee.Initialize(project='edge3-448100')
+    if req == 10:
+        req = -1
 
 
 sites = [
@@ -42,8 +48,6 @@ for site in sites:
 
     while start_date.millis().getInfo() < end_date.millis().getInfo():
         restart_gee_session()
-        print(start_date.millis().getInfo())
-        print(end_date.millis().getInfo())
         next_month = start_date.advance(1, 'month')
         images = collection.filterDate(start_date, next_month)
         ndwi_stats = images.map(lambda img: img.normalizedDifference(['B3', 'B8'])).mean().reduceRegion(
