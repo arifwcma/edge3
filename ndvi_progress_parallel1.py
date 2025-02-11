@@ -7,7 +7,7 @@ import numpy as np
 ee.Initialize(project='edge3-448100')
 
 sites = [
-    {'name': 'site_3', 'geojson_path': 'site_3.geojson'}
+    {'name': 'site_4', 'geojson_path': 'site_4.geojson'}
 ]
 
 output_folder = "central"
