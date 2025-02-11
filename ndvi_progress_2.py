@@ -9,10 +9,11 @@ sis = ["ndvi","evi","savi",
        ]
 
 for si in sis:
+    print(si)
     sites = ["site_1", "site_2", "site_3", "site_4"]
     file_paths = [f"central/{site}_{si}_stats2.csv" for site in sites]
     data = [pd.read_csv(file, usecols=["year", "month", "avg_si"]) for file in file_paths]
-
+    print(len(data[0]))
     min_y = min(df["avg_si"].min() for df in data)
     max_y = max(df["avg_si"].max() for df in data)
 

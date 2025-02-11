@@ -70,9 +70,9 @@ for site in sites:
         ).getInfo()
 
         if savi_stats:
-            avg_si = savi_stats.get('nd_mean', None)
-            std = savi_stats.get('nd_stdDev', None)
-            num = savi_stats.get('nd_count', None)
+            avg_si = savi_stats.get('B8_mean', None)
+            std = savi_stats.get('B8_stdDev', None)
+            num = savi_stats.get('B8_count', None)
             data.append({
                 'year': start_date.get('year').getInfo(),
                 'month': start_date.get('month').getInfo(),

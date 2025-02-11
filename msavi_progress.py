@@ -70,9 +70,9 @@ for site in sites:
         ).getInfo()
 
         if msavi_stats:
-            avg_si = msavi_stats.get('nd_mean', None)
-            std = msavi_stats.get('nd_stdDev', None)
-            num = msavi_stats.get('nd_count', None)
+            avg_si = msavi_stats.get('constant_mean', None)
+            std = msavi_stats.get('constant_stdDev', None)
+            num = msavi_stats.get('constant_count', None)
             data.append({
                 'year': start_date.get('year').getInfo(),
                 'month': start_date.get('month').getInfo(),

@@ -68,11 +68,10 @@ for site in sites:
             scale=10
         ).getInfo()
 
-
         if chloro_stats:
-            avg_si = chloro_stats.get('nd_mean', None)
-            std = chloro_stats.get('nd_stdDev', None)
-            num = chloro_stats.get('nd_count', None)
+            avg_si = chloro_stats.get('B8_mean', None)
+            std = chloro_stats.get('B8_stdDev', None)
+            num = chloro_stats.get('B8_count', None)
             data.append({
                 'year': start_date.get('year').getInfo(),
                 'month': start_date.get('month').getInfo(),
@@ -80,7 +79,6 @@ for site in sites:
                 'num': num,
                 'std': std
             })
-
         start_date = next_month
 
     df = pd.DataFrame(data)
